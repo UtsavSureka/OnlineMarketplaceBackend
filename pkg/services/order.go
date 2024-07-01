@@ -38,3 +38,8 @@ func CreateOrder(order models.Order) (int, error) {
 	}
 	return order_id, nil
 }
+
+func GetOrderDetailsById(id int) (models.Order, error) {
+
+	return models.Order{}, nil
+}
