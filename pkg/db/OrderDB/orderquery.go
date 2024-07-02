@@ -43,3 +43,35 @@ func CreataOrder(order models.Order) (int, error) {
 
 	return int(orderId), nil
 }
+
+func GetOrderByOrderId(id int) (models.Order, error) {
+
+	DB, err := DBConnection.DBConnection()
+	if err != nil {
+		return models.Order{}, err
+	}
+	// creating a variable orderDetail to store all the data of order
+	var orderDetail models.Order
+
+	orderRow := DB.QueryRow("SELECT id,user_id,total_amount,status FROM orders WHERE id=?", id)
+	err = orderRow.Scan(&orderDetail.Id, &orderDetail.UserId, &orderDetail.Total, &orderDetail.Status)
+	if err != nil {
+		return models.Order{}, err
+	}
+
+	orderItems, err := DB.Query("SELECT id,order_id,product_id,product_name,quantity,price FROM orderitems WHERE order_id=?", id)
+	if err != nil {
+		return models.Order{}, err
+	}
+
+	defer orderItems.Close()
+
+	for orderItems.Next() {
+		var orderItem models.Order_Items
+		orderItems.Scan(&orderItem.Id, &orderItem.Order_id, &orderItem.Product_id, &orderItem.Product_name, &orderItem.Quantity, &orderItem.Price)
+		orderDetail.Items = append(orderDetail.Items, orderItem)
+	}
+
+	return orderDetail, nil
+
+}

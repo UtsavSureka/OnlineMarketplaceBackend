@@ -28,5 +28,6 @@ func groupAllEndPoints(v1 *gin.RouterGroup) {
 	order := v1.Group("/order")
 	{
 		order.POST("create", utils.LoginMiddleware(), handlers.CreateNewOrder)
+		order.GET("OrderDetail", utils.LoginMiddleware(), handlers.GetOrderById)
 	}
 }

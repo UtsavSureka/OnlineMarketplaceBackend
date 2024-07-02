@@ -13,14 +13,14 @@ import (
 // UserRegistrationHandler registers a new user to the database
 // @Summary Register a new user
 // @Description Register a new user and add the details in the database
-// @Tags user
+// @Tags users
 // @Accept  json
 // @Produce  json
 // @Param   user body RegisterUserRequest true "User registration request"
 // @Success 200 {object} RegisterUserResponse
 // @Failure 400 {object} RegisterUserResponse
 // @Failure 500 {object} RegisterUserResponse
-// @Router /user/register [post]
+// @Router users/register [post]
 func UserRegistrationHandler(ctx *gin.Context) {
 
 	var req RegisterUserRequest

@@ -1,9 +1,11 @@
 package services
 
 import (
+	DBConnection "Ecomm/pkg/db/DbConnection"
 	orderdb "Ecomm/pkg/db/OrderDB"
 	productdb "Ecomm/pkg/db/ProductDB"
 	"Ecomm/pkg/models"
+	"fmt"
 )
 
 func CreateOrder(order models.Order) (int, error) {
@@ -40,6 +42,35 @@ func CreateOrder(order models.Order) (int, error) {
 }
 
 func GetOrderDetailsById(id int) (models.Order, error) {
+	DB, err := DBConnection.DBConnection()
+	if err != nil {
+		return models.Order{}, err
+	}
 
-	return models.Order{}, nil
+	//Map to store orderid and bool to find if the order with order id is present or not
+	isPresent := make(map[int]bool)
+
+	rows, err := DB.Query("SELECT id FROM orders")
+	if err != nil {
+		return models.Order{}, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var orderId int
+		rows.Scan(&orderId)
+		isPresent[orderId] = true
+	}
+
+	if !isPresent[id] {
+		return models.Order{}, fmt.Errorf("order with order id : %d is not present", id)
+	}
+
+	orderDetail, err := orderdb.GetOrderByOrderId(id)
+	if err != nil {
+		return models.Order{}, err
+	}
+
+	return orderDetail, nil
 }
