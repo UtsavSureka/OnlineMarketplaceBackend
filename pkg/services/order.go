@@ -19,9 +19,12 @@ func CreateOrder(order models.Order) (int, error) {
 	//Make a map of id and respective price
 	productIdMapping := make(map[int]float64)
 	productNameMapping := make(map[int]string)
+	productQuanttityMapping := make(map[int]int)
+
 	for _, product := range products {
 		productIdMapping[product.Id] = product.Price
 		productNameMapping[product.Id] = product.Name
+		productQuanttityMapping[product.Id] = product.Quantity
 	}
 
 	//Calculate the total value of order and map order price to product price
@@ -39,6 +42,21 @@ func CreateOrder(order models.Order) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+
+	//As order is created successfully we need to change the current quantity in product table
+	for i := range order.Items {
+		currentQuantity := productQuanttityMapping[order.Items[i].Product_id] - order.Items[i].Quantity
+		DB, err := DBConnection.DBConnection()
+		if err != nil {
+			return 0, errors.New("unable to make DB connection for updating product")
+		}
+		_, err = DB.Exec("UPDATE products SET quantity=?,updated_at=CURRENT_TIMESTAMP WHERE id = ?", currentQuantity, order.Items[i].Product_id)
+		if err != nil {
+			return 0, errors.New("unable to update product quantity")
+		}
+		defer DB.Close()
+	}
+
 	return order_id, nil
 }
 
