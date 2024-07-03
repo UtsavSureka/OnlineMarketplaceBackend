@@ -75,3 +75,39 @@ func GetOrderByOrderId(id int) (models.Order, error) {
 	return orderDetail, nil
 
 }
+
+func GetAllOrdersByUserId(id int) ([]models.Order, error) {
+	DB, err := DBConnection.DBConnection()
+	if err != nil {
+		return []models.Order{}, err
+	}
+
+	var orders []models.Order
+	orderRows, err := DB.Query("SELECT id,user_id,total_amount,status FROM orders")
+	if err != nil {
+		return []models.Order{}, err
+	}
+
+	orderItemsQuery := "SELECT id,order_id,product_id,product_name,quantity,price FROM OrderItems WHERE order_id=?"
+
+	for orderRows.Next() {
+		var order models.Order
+		orderRows.Scan(&order.Id, &order.UserId, &order.Total, &order.Status)
+
+		var orderItems []models.Order_Items
+		orderItemRows, err := DB.Query(orderItemsQuery, order.Id)
+		if err != nil {
+			return []models.Order{}, err
+		}
+		for orderItemRows.Next() {
+			var orderItem models.Order_Items
+			orderItemRows.Scan(&orderItem.Id, &orderItem.Order_id, &orderItem.Product_id, &orderItem.Product_name, &orderItem.Quantity, &orderItem.Price)
+			orderItems = append(orderItems, orderItem)
+		}
+		order.Items = append(order.Items, orderItems...)
+		orders = append(orders, order)
+	}
+
+	return orders, nil
+
+}

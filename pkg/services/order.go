@@ -95,6 +95,11 @@ func GetAllOrdersByUserId(id int) ([]models.Order, error) {
 		return []models.Order{}, fmt.Errorf("no order present with order id %d", id)
 	}
 
-	return []models.Order{}, nil
+	orders, err := orderdb.GetAllOrdersByUserId(id)
+	if err != nil {
+		return []models.Order{}, err
+	}
+
+	return orders, nil
 
 }
