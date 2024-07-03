@@ -1,4 +1,5 @@
-basePath: /utsav
+basePath: /api/v1
+host: localhost:5000
 info:
   contact:
     email: ramsureka007@gmail.com

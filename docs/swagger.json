@@ -10,6 +10,7 @@
         },
         "version": "2.0"
     },
-    "basePath": "/utsav",
+    "host": "localhost:5000",
+    "basePath": "/api/v1",
     "paths": {}
 }

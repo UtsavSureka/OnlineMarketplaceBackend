@@ -24,8 +24,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "2.0",
-	Host:             "",
-	BasePath:         "/utsav",
+	Host:             "localhost:5000",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Documenting API (Online Marketplace Apis)",
 	Description:      "API for Online Marketplace having several functionality to handle user,product and order details.",
