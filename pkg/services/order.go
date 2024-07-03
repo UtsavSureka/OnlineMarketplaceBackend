@@ -5,6 +5,7 @@ import (
 	orderdb "Ecomm/pkg/db/OrderDB"
 	productdb "Ecomm/pkg/db/ProductDB"
 	"Ecomm/pkg/models"
+	"errors"
 	"fmt"
 )
 
@@ -73,4 +74,27 @@ func GetOrderDetailsById(id int) (models.Order, error) {
 	}
 
 	return orderDetail, nil
+}
+
+func GetAllOrdersByUserId(id int) ([]models.Order, error) {
+	DB, err := DBConnection.DBConnection()
+	if err != nil {
+		return []models.Order{}, errors.New("unable to make connectio to Database")
+	}
+
+	defer DB.Close()
+	//Check if order with the user id given exists or not
+	var isPresent bool
+	rows, err := DB.Query("SELECT user_id FROM orders WHERE user_id=?", id)
+	if err != nil {
+		return []models.Order{}, err
+	}
+	isPresent = rows.Next()
+
+	if !isPresent {
+		return []models.Order{}, fmt.Errorf("no order present with order id %d", id)
+	}
+
+	return []models.Order{}, nil
+
 }

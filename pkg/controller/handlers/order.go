@@ -70,3 +70,23 @@ func GetOrderById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 
 }
+
+func GetOrderHistory(ctx *gin.Context) {
+	user_id, exists := ctx.Get("id")
+	if !exists {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"err": "Unable to get user id",
+		})
+		return
+	}
+	id := user_id.(int)
+
+	orders, err := services.GetAllOrdersByUserId(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, orders)
+}
