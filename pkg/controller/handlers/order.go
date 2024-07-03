@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateNewOrder(ctx *gin.Context) {
+func CreateNewOrderHandler(ctx *gin.Context) {
 	user_id, exists := ctx.Get("id")
 	if !exists {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -44,7 +44,7 @@ func CreateNewOrder(ctx *gin.Context) {
 
 }
 
-func GetOrderById(ctx *gin.Context) {
+func GetOrderByIdHandler(ctx *gin.Context) {
 	id_string := ctx.Query("id")
 	if id_string == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -71,7 +71,7 @@ func GetOrderById(ctx *gin.Context) {
 
 }
 
-func GetOrderHistory(ctx *gin.Context) {
+func GetOrderHistoryHandler(ctx *gin.Context) {
 	user_id, exists := ctx.Get("id")
 	if !exists {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -89,4 +89,32 @@ func GetOrderHistory(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, orders)
+}
+
+func CancelOrderHandler(ctx *gin.Context) {
+	orderId := ctx.Query("id")
+	if orderId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request",
+		})
+		return
+	}
+	id, err := strconv.Atoi(orderId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid order id",
+		})
+		return
+	}
+	err = services.CancelAnOrder(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Order Cancelled",
+	})
 }

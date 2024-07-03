@@ -39,7 +39,10 @@ func CreataOrder(order models.Order) (int, error) {
 			_, err = DB.Exec("DELETE FROM orders WHERE id = ?", int(orderId))
 			return 0, err
 		}
+
 	}
+
+	//As order is created successfully we need to change the current quantity in product table
 
 	return int(orderId), nil
 }
@@ -110,4 +113,20 @@ func GetAllOrdersByUserId(id int) ([]models.Order, error) {
 
 	return orders, nil
 
+}
+
+func CancelOrderByOrderId(id int) error {
+
+	DB, err := DBConnection.DBConnection()
+	if err != nil {
+		return err
+	}
+	_, err = DB.Exec("UPDATE orders SET status=? WHERE id=?", "cancelled", id)
+	if err != nil {
+		return err
+	}
+
+	// Write a function to update the product quantity as order is cancelled :
+
+	return nil
 }

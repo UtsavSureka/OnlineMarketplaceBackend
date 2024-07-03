@@ -121,3 +121,29 @@ func GetAllOrdersByUserId(id int) ([]models.Order, error) {
 	return orders, nil
 
 }
+
+func CancelAnOrder(id int) error {
+	DB, err := DBConnection.DBConnection()
+	if err != nil {
+		return err
+	}
+
+	defer DB.Close()
+
+	rows, err := DB.Query("SELECT id From orders WHERE id=?", id)
+	if err != nil {
+		return err
+	}
+
+	if !rows.Next() {
+		return fmt.Errorf("order with order id %d is not present", id)
+	}
+
+	err = orderdb.CancelOrderByOrderId(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
