@@ -121,6 +121,8 @@ func CancelOrderByOrderId(id int) error {
 	if err != nil {
 		return err
 	}
+
+	defer DB.Close()
 	_, err = DB.Exec("UPDATE orders SET status=? WHERE id=?", "cancelled", id)
 	if err != nil {
 		return err
@@ -128,5 +130,33 @@ func CancelOrderByOrderId(id int) error {
 
 	// Write a function to update the product quantity as order is cancelled :
 
+	orderItems, err := DB.Query("SELECT product_id,quantity FROM orderitems where order_id=?", id)
+	if err != nil {
+		return err
+	}
+
+	type OrderQuantity struct {
+		product_id int
+		quantity   int
+	}
+
+	var orderQuantity []OrderQuantity
+
+	for orderItems.Next() {
+		var orders OrderQuantity
+		orderItems.Scan(&orders.product_id, &orders.quantity)
+		orderQuantity = append(orderQuantity, orders)
+	}
+
+	for i := range orderQuantity {
+		var productQuantity int
+		row := DB.QueryRow("SELECT quantity FROM products WHERE id=?", orderQuantity[i].product_id)
+		row.Scan(&productQuantity)
+
+		_, err := DB.Exec("UPDATE products SET quantity=? WHERE id=?", productQuantity-orderQuantity[i].quantity, orderQuantity[i].product_id)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
