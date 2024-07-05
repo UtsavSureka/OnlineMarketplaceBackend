@@ -17,7 +17,7 @@ func DBConnection() (*sql.DB, error) {
 	//Ping the database to ensure successful connection :
 
 	if err = User_DB.Ping(); err != nil {
-		log.Fatal("Failed to ping to database")
+		log.Fatal(err)
 	}
 
 	return User_DB, nil

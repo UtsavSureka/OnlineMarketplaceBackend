@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"Ecomm/config"
 	"Ecomm/pkg/models"
 	"errors"
 	"time"
@@ -8,7 +9,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-const JWTSecretKey = "HelloWorld"
+var JWTSecretKey = config.JWT_SECRET
 
 type Claims struct {
 	Id       int

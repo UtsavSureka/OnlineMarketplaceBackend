@@ -135,6 +135,8 @@ func CancelOrderByOrderId(id int) error {
 		return err
 	}
 
+	defer orderItems.Close()
+
 	type OrderQuantity struct {
 		product_id int
 		quantity   int
@@ -153,7 +155,7 @@ func CancelOrderByOrderId(id int) error {
 		row := DB.QueryRow("SELECT quantity FROM products WHERE id=?", orderQuantity[i].product_id)
 		row.Scan(&productQuantity)
 
-		_, err := DB.Exec("UPDATE products SET quantity=? WHERE id=?", productQuantity-orderQuantity[i].quantity, orderQuantity[i].product_id)
+		_, err := DB.Exec("UPDATE products SET quantity=? WHERE id=?", productQuantity+orderQuantity[i].quantity, orderQuantity[i].product_id)
 		if err != nil {
 			return err
 		}
