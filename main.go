@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Ecomm/config"
 	_ "Ecomm/docs" // Import the generated docs
 	"Ecomm/server"
 	"log"
@@ -18,7 +19,8 @@ import (
 // @Host localhost:5000
 // @BasePath /api/v1
 func main() {
-
+	//Initialize the config variable
+	config.InitConfig()
 	// Initialize the Gin server
 	server := server.Build()
 	// Serve the Swagger documentation
